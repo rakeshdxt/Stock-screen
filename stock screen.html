@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Screener Mobile</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <style>
+        body { font-family: sans-serif; background: #0f172a; color: white; margin: 0; padding: 15px; }
+        .btn { width: 100%; padding: 15px; background: #3b82f6; border: none; color: white; border-radius: 8px; font-weight: bold; }
+        .table-container { overflow-x: auto; margin-top: 20px; background: #1e293b; border-radius: 8px; }
+        table { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 600px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #334155; }
+    </style>
+</head>
+<body>
+    <h2>📊 Indian Screener</h2>
+    <button class="btn" onclick="fetchData()">🔄 Refresh Data</button>
+    <div class="table-container">
+        <table id="stockTable"></table>
+    </div>
+    <script>
+        const CSV_URL = "https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/rsd_latest_data.csv";
+        async function fetchData() {
+            const res = await fetch(CSV_URL);
+            const csvText = await res.text();
+            Papa.parse(csvText, {
+                header: true,
+                complete: (results) => {
+                    const table = document.getElementById('stockTable');
+                    let html = `<tr>${Object.keys(results.data[0]).map(k => `<th>${k}</th>`).join('')}</tr>`;
+                    html += results.data.map(row => `<tr>${Object.values(row).map(v => `<td>${v}</td>`).join('')}</tr>`).join('');
+                    table.innerHTML = html;
+                }
+            });
+        }
+    </script>
+</body>
+</html>
