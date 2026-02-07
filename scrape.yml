@@ -1,0 +1,25 @@
+name: 2x Daily Stock Scrape
+on:
+  schedule:
+    - cron: '30 3,12 * * *' # 3:30 AM & 12:30 PM UTC = 9:00 AM & 6:00 PM IST
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with: { python-version: '3.10' }
+      - name: Install dependencies
+        run: pip install selenium selenium-stealth pandas lxml
+      - name: Run Scraper
+        run: python main.py
+      - name: Save CSV back to GitHub
+        run: |
+          git config --global user.name "GitHub Action Bot"
+          git config --global user.email "bot@github.com"
+          git add rsd_latest_data.csv
+          git commit -m "Automated update" || exit 0
+          git push
